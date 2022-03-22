@@ -7,8 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
 public class FileAccesser {
-	static ArrayList<String> passwords = new ArrayList<>();
-	static ArrayList<String> usernames = new ArrayList<>();
+	static ArrayList<Account> accounts = new ArrayList<>();
 	
 	public static void main(String[] args) throws FileNotFoundException {
 		Scanner fileIn = new Scanner(new File("passwords.txt"));
@@ -17,18 +16,17 @@ public class FileAccesser {
 			String s = fileIn.nextLine();
 			for (int i = 0; i < s.length(); i++) {
 				if ((int) s.charAt(i) == 58) {
-					usernames.add(s.substring(0, i));
-					passwords.add(s.substring(i + 2));
+					accounts.add(new Account(decrypt(s.substring(0, i)), decrypt(s.substring(i + 2))));
 				}
 			}
 		}
 		
 		fileIn.close();
 		
-		for (int i = 0; i < passwords.size(); i++) {
-			passwords.set(i, decrypt(passwords.get(i)));
-			usernames.set(i, decrypt(usernames.get(i)));
-		}
+//		for (int i = 0; i < passwords.size(); i++) {
+//			passwords.set(i, decrypt(passwords.get(i)));
+//			usernames.set(i, decrypt(usernames.get(i)));
+//		}
 		
 //		for (String s : usernames) {
 //			System.out.println(s);
@@ -38,15 +36,23 @@ public class FileAccesser {
 //			System.out.println(s);
 //		}
 		
-		System.out.println(searchByUsername("username2"));
+//		System.out.println(searchByUsername("username2"));
 		
 		PrintWriter fileOut = new PrintWriter(new File("passwords.txt"));
 		
-		for (int i = 0; i < passwords.size(); i++) {
-			fileOut.printf("%s: %s%n", encrypt(usernames.get(i)), encrypt(passwords.get(i)));
+//		for (int i = 0; i < passwords.size(); i++) {
+//			fileOut.printf("%s: %s%n", encrypt(usernames.get(i)), encrypt(passwords.get(i)));
+//		}
+		
+		for (int i = 0; i < accounts.size(); i++) {
+			fileOut.printf("%s: %s%n", encrypt(accounts.get(i).getUsername()), encrypt(accounts.get(i).getPassword()));
 		}
 		
 		fileOut.close();
+		
+		
+//		Account testing = new Account("username1", "wordpass");
+//		System.out.println(testing.getPassword());
 	}
 	
 	static String encrypt(String s) {
@@ -89,14 +95,24 @@ public class FileAccesser {
 		return decrypted;
 	}
 	
-	static String searchByUsername(String s) {
-		for (int i = 0; i < usernames.size(); i++) {
-			if (compareStrings(usernames.get(i), s)) {
-				return String.format("%s: %s%n", usernames.get(i), passwords.get(i));
-			}
-		}
-		
-		return "No such account";
+//	static ArrayList<String> searchByUsername(String s) {
+//		ArrayList<String> results = new ArrayList<>();
+//		
+//		for (int i = 0; i < usernames.size(); i++) {
+//			if (compareStrings(usernames.get(i), s)) {
+//				results.add(String.format("%s: %s%n", usernames.get(i), passwords.get(i)));
+//			}
+//		}
+//		
+//		return results;
+//	}
+	
+	static void addAccount(String username, String password) {
+		accounts.add(new Account(username, password));
+	}
+	
+	static void deleteAccount(int index) {
+		accounts.remove(index);
 	}
 	
 	static boolean compareStrings(String s1, String s2) {
